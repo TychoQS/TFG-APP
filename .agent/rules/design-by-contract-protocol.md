@@ -5,7 +5,8 @@ trigger: always_on
 # DESIGN BY CONTRACT PROTOCOL
 
 ## Core Development Rules
-- **Contract First:** You are strictly forbidden from writing implementation logic, UI code or any sort of code before the user approves a technical contract. 
-- **Interface Definition:** You must first propose a TypeScript `interface` or `type` in the chat. This contract must include JSDoc comments defining `@precondition` and `@postcondition`.
-- **UI Architecture:** For UI tasks, the contract must explicitly define the view states (e.g., 'idle', 'loading', 'success', 'error') and the data structure the component expects.
-- **Tech Stack Compliance:** All code must be written using React, Ant UI and Capacitor.
+- **Contract First:** All contracts are already defined in `src/`. Do NOT propose new contracts or interfaces unless explicitly asked.
+- **Implementation:** Read and implement directly from the existing contracts in `src/features/`, `src/screens/`, `src/components/`, `src/navigation/` and `src/theme/`, etc...
+- **Interface Compliance:** All implementations must strictly respect the `@precondition`, `@postcondition` and `@invariant` defined in the existing contracts.
+- **No New Interfaces:** You are forbidden from creating new interfaces or types unless explicitly requested by the user.
+- **Tech Stack Compliance:** All code must be written using React, Ant Design and Capacitor.
