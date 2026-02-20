@@ -1,0 +1,190 @@
+.kanji-card-drawer .ant-drawer-content {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.kanji-card-drawer .ant-drawer-body {
+    padding: 0 16px 40px 16px;
+    display: flex;
+    justify-content: center;
+    overflow: visible;
+}
+
+.kanji-card-wrapper {
+    background: #1a1a1a;
+    background: linear-gradient(145deg, #1a1a1a 0%, #141414 100%);
+    color: #e0e0e0;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 32px;
+    padding: 36px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Slide up animation for the card itself */
+    animation: floating-card-up 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes floating-card-up {
+    from {
+        transform: translateY(100px) scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.kanji-card-close-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border: none;
+    color: #666;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.kanji-card-close-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+.kanji-card-content {
+    width: 100%;
+}
+
+.kanji-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 32px;
+}
+
+.kanji-character-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.kanji-main-char {
+    font-size: 110px;
+    line-height: 1;
+    margin: 0;
+    color: #ffffff;
+    font-weight: 200;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.kanji-match-badge {
+    font-size: 9px;
+    color: #555;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.kanji-readings-box {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.reading-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.reading-group label {
+    font-size: 9px;
+    color: #3d3d3d;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 800;
+}
+
+.reading-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.reading-text {
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.kunyomi-text {
+    color: #ffffff;
+}
+
+.onyomi-text {
+    color: #888;
+}
+
+.reading-none {
+    color: #333;
+}
+
+/* Ant Design Drawer specific overrides */
+.ant-drawer-bottom .ant-drawer-content-wrapper {
+    height: auto !important;
+    background: transparent !important;
+}
+
+.ant-drawer-mask {
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Tactile handle at the top of the card */
+.kanji-card-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+}
+
+@media (max-width: 480px) {
+    .kanji-card-wrapper {
+        padding: 24px;
+        border-radius: 24px;
+    }
+
+    .kanji-main-char {
+        font-size: 90px;
+    }
+
+    .reading-text {
+        font-size: 18px;
+    }
+
+    .kanji-header {
+        gap: 20px;
+    }
+}
