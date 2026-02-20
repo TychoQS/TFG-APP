@@ -53,26 +53,29 @@ export interface ClassificationPhotoModeLayoutProps {
 /**
  * @invariant The inference list is always displayed below the canvas
  * @invariant Content is always centered and stacked in a column layout
+ * @invariant The clear canvas button will be always independent of the submode (extended or not) below the canvas with some separation
+ * @invariant The expand/contract canvas button will be always independent of the submode (extended or not) below the clear button and above the prediction list with some separation
+ * 
  */
 export interface ClassificationDrawModeLayoutProps {
     /**
      * @precondition The user must be in the classification page in draw mode but not in the extended submode
-     * @invariant The canvas will occupy 50% of the height and 100% of the width, while the predictions list and the clear button will occupy the remaining height.
+     * @invariant The canvas will occupy 50% of the height and 100% of the width, while the predictions list, the clear button and the return button will occupy the remaining height.
      * @postcondition All unnecessary UI elements are removed, including the toggle button, side menu, etc...
      */
     onExtendCanvas: () => void;
 
     /**
      * @precondition The user must be in the classification page in draw mode in the extended submode
-     * @invariant In the top right an an cross icon button is always being displayed
+     * @invariant Under the clean canvas button a button with text "Exit extended mode" is always being displayed
      * @postcondition Returns to the classification draw mode
      */
     onContractCanvas: () => void;
 
     /**
      * @precondition The user must be in classification draw mode without the extended submode
-     * @invariant The canvas occupies most of the screen horizontally and vertically without eclipsing other components
-     * @postcondition The canvas resizes to occupy the maximum possible screen space
+     * @invariant The canvas occupies most of the screen horizontally and vertically without eclipsing other components and not filling the whole screen (giving space in borders)
+     * @postcondition The canvas resizes to occupy the maximum possible screen space without eclipsing other components and filling the whole screen
      */
     canvasSize: { width: number; height: number };
 
