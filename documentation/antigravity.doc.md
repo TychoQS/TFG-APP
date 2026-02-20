@@ -37,3 +37,12 @@
     - Ensured character layout follows the contract (character left/top, readings right).
     - Affected files: `src/screens/components/KanjiCard/KanjiCard.tsx`, `src/screens/components/KanjiCard/KanjiCard.css`, `src/screens/components/KanjiCard/index.ts`.
 - **Supervision Justification:** The result is valid after manual adjustments requested by the user. The initial implementation was corrected to: 1) Change the entry animation to slide up from the bottom (using a Drawer instead of a Modal) and 2) Refine the CSS to achieve a "floating card" shape instead of a basic full-width container.
+
+### **Task ID:** UI-02
+- **Human Specification (Input):** Implement the Inference/Suggestion list of the application.
+- **Technical Development:** 
+    - Implemented `InferenceList` with a circular scroll mechanism by tripling the list and jumping scroll position on limits.
+    - Created premium glassmorphic styling with horizontal scroll indicators (fades) and smooth micro-interactions.
+    - Integrated with `App.tsx` showing a mock list that updates the `KanjiCard` when an item is selected.
+    - Affected files: `src/screens/components/InferenceList/InferenceList.tsx`, `src/screens/components/InferenceList/InferenceList.css`, `src/screens/components/InferenceList/index.ts`, `src/App.tsx`.
+- **Supervision Justification:** The implementation fulfills the circularity invariant. A manual correction was performed by the user changing `scroll-behavior` to `auto` in the CSS to ensure that the circular jump is instantaneous and invisible to the user.
