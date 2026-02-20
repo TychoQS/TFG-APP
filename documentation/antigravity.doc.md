@@ -54,3 +54,13 @@
     - Ensured compliance with the invariant: blocks all interactions while visible and provides sensory feedback on the loading process.
     - Affected files: `src/screens/components/LoadingScreen/LoadingScreen.tsx`, `src/screens/components/LoadingScreen/LoadingScreen.css`, `src/screens/components/LoadingScreen/index.ts`.
 - **Supervision Justification:** The implementation strictly follows the provided `LoadingScreenProps` contract and reinforces the premium grayscale aesthetic established in previous tasks.
+
+### **Task ID:** UI-04
+- **Human Specification (Input):** Implement the Canvas of draw mode of the classification page.
+- **Technical Development:** 
+    - Implemented `CanvasInput` component strictly following `CanvasInputProps` (only `backgroundColor`).
+    - Fixed flickering issues by refactoring state-based drawing to ref-based imperative painting on the canvas.
+    - Achieved strict separation of concerns by removing the "Clear" button from the component and exposing clear/stroke logic via global custom events (`canvas:clear`, `canvas:stroke-end`).
+    - Ensured "opposite colors" invariant (e.g., black strokes on white background).
+    - Affected files: `src/screens/components/CanvasInput/CanvasInput.tsx`, `src/screens/components/CanvasInput/CanvasInput.css`, `src/screens/components/CanvasInput/index.ts`, `src/App.tsx`.
+- **Supervision Justification:** The result is valid after manual adjustments requested by the user. The initial implementation was corrected to: 1) Remove extra props (`width`, `height`, `onClear`, etc.) not defined in the contract, 2) Remove the integrated "Clear" button to respect architectural separation of responsibilities, and 3) Fix visual flickering in the canvas border/content during drawing.

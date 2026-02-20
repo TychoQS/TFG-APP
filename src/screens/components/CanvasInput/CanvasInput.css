@@ -1,0 +1,43 @@
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    max-height: 500px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.canvas-draw-area {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    cursor: crosshair;
+    touch-action: none;
+    outline: none;
+    background: #000;
+}
+
+.canvas-draw-area.white {
+    background: #fff;
+    box-shadow: 0 10px 40px rgba(255, 255, 255, 0.05);
+}
+
+.canvas-draw-area.black {
+    background: #000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 1);
+}
+
+.canvas-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+}
