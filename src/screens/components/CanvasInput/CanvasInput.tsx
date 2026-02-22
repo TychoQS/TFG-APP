@@ -16,25 +16,26 @@ const CanvasInput: React.FC<CanvasInputProps> = ({ backgroundColor }) => {
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-
         const ctx = canvas.getContext('2d', { alpha: false });
         if (!ctx) return;
         ctxRef.current = ctx;
 
-        if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
+        const resizeCanvas = () => {
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
-        }
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        };
 
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        resizeCanvas();
 
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 8;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
+        const resizeObserver = new ResizeObserver(resizeCanvas);
+        resizeObserver.observe(canvas);
 
-        // Separate responsibility: Listen for external clear command
         const handleExternalClear = () => {
             if (ctxRef.current) {
                 ctxRef.current.fillStyle = bgColor;
@@ -44,7 +45,10 @@ const CanvasInput: React.FC<CanvasInputProps> = ({ backgroundColor }) => {
         };
 
         window.addEventListener('canvas:clear', handleExternalClear);
-        return () => window.removeEventListener('canvas:clear', handleExternalClear);
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener('canvas:clear', handleExternalClear);
+        };
     }, [bgColor, strokeColor]);
 
     const getCoords = (e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent): { x: number, y: number } | null => {
