@@ -13,26 +13,34 @@ const InferenceList: React.FC<InferenceListProps> = ({ inferenceList, onKanjiPre
         const container = scrollRef.current;
         if (!container || originalLength === 0) return;
 
-        // Start at the middle duplicate for seamless bidirectional scrolling
-        const itemWidth = container.scrollWidth / 3;
-        container.scrollLeft = itemWidth;
+        const singleSetWidth = container.scrollWidth / 3;
+        container.scrollLeft = singleSetWidth;
+
+        let isAdjusting = false;
 
         const handleScroll = () => {
-            const { scrollLeft, scrollWidth } = container;
-            const oneThird = scrollWidth / 3;
+            if (isAdjusting) return;
+            const { scrollLeft } = container;
 
-            // If we scroll too far left, jump to the same position in the middle third
             if (scrollLeft <= 0) {
-                container.scrollLeft = oneThird;
-            }
-            // If we scroll too far right, jump back to the middle
-            else if (scrollLeft >= oneThird * 2) {
-                container.scrollLeft = oneThird;
+                isAdjusting = true;
+                container.scrollLeft = scrollLeft + singleSetWidth;
+                requestAnimationFrame(() => {
+                    isAdjusting = false;
+                });
+            } else if (scrollLeft >= container.scrollWidth - container.clientWidth - 1) {
+                isAdjusting = true;
+                container.scrollLeft = scrollLeft - singleSetWidth;
+                requestAnimationFrame(() => {
+                    isAdjusting = false;
+                });
             }
         };
 
-        container.addEventListener('scroll', handleScroll);
-        return () => container.removeEventListener('scroll', handleScroll);
+        container.addEventListener("scroll", handleScroll, { passive: true });
+        return () => {
+            container.removeEventListener("scroll", handleScroll);
+        };
     }, [originalLength]);
 
     if (!inferenceList || inferenceList.length === 0) return null;
