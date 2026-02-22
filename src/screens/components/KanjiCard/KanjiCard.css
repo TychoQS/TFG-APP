@@ -3,6 +3,10 @@
     box-shadow: none !important;
 }
 
+.kanji-card-drawer {
+    background: transparent !important;
+}
+
 .kanji-card-drawer .ant-drawer-body {
     padding: 0 16px 40px 16px;
     display: flex;
