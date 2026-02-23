@@ -5,6 +5,8 @@ import { MenuOutlined } from "@ant-design/icons";
 import ClassificationPhotoModeLayout from "./ClassificationPhotoMode/ClassificationPhotoModeLayout";
 import ClassificationDrawModeLayout from "./ClassificationDrawMode/ClassificationDrawModeLayout";
 import "./ClassificationLayout.css";
+import { useNavigation } from '../../navigation/context';
+import { Routes } from '../../navigation/routes';
 
 
 
@@ -12,6 +14,7 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [canvasSize, setCanvasSize] = useState({ width: 300, height: 300 });
     const [isExtended, setIsExtended] = useState(false);
+    const { navigateTo } = useNavigation();
 
     return (
         <div className="layout-container">
@@ -51,10 +54,12 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
                         onExtendCanvas={() => {
                             setIsExtended(true);
                             setCanvasSize({ width: 600, height: 600 });
+                            navigateTo(Routes.CLASSIFICATION_DRAW_EXPANDED);
                         }}
                         onContractCanvas={() => {
                             setIsExtended(false);
                             setCanvasSize({ width: 300, height: 300 });
+                            navigateTo(Routes.CLASSIFICATION_DRAW);
                         }}
                         canvasSize={canvasSize}
                         inferenceList={[]}
