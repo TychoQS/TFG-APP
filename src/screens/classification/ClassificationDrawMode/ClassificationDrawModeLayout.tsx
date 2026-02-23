@@ -7,11 +7,14 @@ import { useState } from "react";
 import { KanjiCard } from "../../components/KanjiCard";
 import type { Kanji } from "../../../model/types";
 import { DeleteOutlined, FullscreenOutlined, FullscreenExitOutlined } from "@ant-design/icons";
+import { useNavigation } from '../../../navigation/context';
+import { Routes } from '../../../navigation/routes';
 
 
 const ClassificationDrawModeLayout = (props: ClassificationDrawModeLayoutProps) => {
     const [selectedKanji, setSelectedKanji] = useState<Kanji | null>(null);
-    const isExtended = props.canvasSize.height > 400;
+    const { route } = useNavigation();
+    const isExtended = route === Routes.CLASSIFICATION_DRAW_EXPANDED;
 
     return (
         <div className={`container ${isExtended ? 'extended' : ''}`}>

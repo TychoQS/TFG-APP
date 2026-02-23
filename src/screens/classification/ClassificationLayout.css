@@ -16,7 +16,3 @@
     flex: 1;
     overflow: hidden;
 }
-
-.layout-container.extended {
-    height: 100vh;
-}

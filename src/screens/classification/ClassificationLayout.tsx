@@ -12,7 +12,6 @@ import { Routes } from '../../navigation/routes';
 
 const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutProps) => {
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [canvasSize, setCanvasSize] = useState({ width: 300, height: 300 });
     const [isExtended, setIsExtended] = useState(false);
     const { navigateTo } = useNavigation();
 
@@ -53,15 +52,12 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
                     <ClassificationDrawModeLayout
                         onExtendCanvas={() => {
                             setIsExtended(true);
-                            setCanvasSize({ width: 600, height: 600 });
                             navigateTo(Routes.CLASSIFICATION_DRAW_EXPANDED);
                         }}
                         onContractCanvas={() => {
                             setIsExtended(false);
-                            setCanvasSize({ width: 300, height: 300 });
                             navigateTo(Routes.CLASSIFICATION_DRAW);
                         }}
-                        canvasSize={canvasSize}
                         inferenceList={[]}
                     />
                 )}
