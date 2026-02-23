@@ -11,7 +11,7 @@
 .image-placeholder {
     width: 90%;
     aspect-ratio: 1 / 1;
-    border: 2px dashed #ccc;
+    border: 2px dashed var(--border-strong);
     border-radius: 20px;
     display: flex;
     justify-content: center;
@@ -43,5 +43,5 @@
 
 .image-placeholder .anticon {
     font-size: 4rem;
-    color: #aaa;
+    color: var(--text-tertiary);
 }
