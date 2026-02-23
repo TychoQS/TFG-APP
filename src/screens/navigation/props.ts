@@ -11,7 +11,7 @@ export interface NavigationProps {
 
     /**
      * @precondition The user must be on the navigation page (for example not in loading placeholder or kanji information display)
-     * @precondition The user must swipe from the other side of the menu side to the menu side.
+     * @precondition The user must swipe from the other side of the menu side to the menu side or click on the close button.
      * @invariant The current user page is highligthed
      * @postcondition The navigation menu is closed and the user remains on the current page      
      */

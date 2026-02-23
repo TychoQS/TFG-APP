@@ -64,3 +64,21 @@
     - Ensured "opposite colors" invariant (e.g., black strokes on white background).
     - Affected files: `src/screens/components/CanvasInput/CanvasInput.tsx`, `src/screens/components/CanvasInput/CanvasInput.css`, `src/screens/components/CanvasInput/index.ts`, `src/App.tsx`.
 - **Supervision Justification:** The result is valid after manual adjustments requested by the user. The initial implementation was corrected to: 1) Remove extra props (`width`, `height`, `onClear`, etc.) not defined in the contract, 2) Remove the integrated "Clear" button to respect architectural separation of responsibilities, and 3) Fix visual flickering in the canvas border/content during drawing.
+
+## 2026-02-23
+### **Task ID:** UI-05
+- **Human Specification (Input):** Implement the Navigation feature of the the application. Main screen has already the button of the navigation, but swipe and other functionalities are not already implemented.
+- **Technical Development:** 
+    - Created `NavigationContext` to globally distribute `NavigationInterface` defined in `src/navigation/types.ts`.
+    - Added contextual bidirectional swipe tracking inside isolated component `NavigationMenu.tsx` capturing DOM touches (`touchstart`/`touchend`) to both open (`onSwipe`) and close (`onSwipeClose`) the menu.
+    - Created `useAppNavigation` React hook acting as a centralized View-Model encapsulating all navigation and presentation logic (`onNavigate`, `currentAbstractPage`, `shouldShowMenuButton`, `handleToggleMode`).
+    - Added robust Design-By-Contract protections within the `navigateTo` state setter preventing transitions into `CLASSIFICATION_DRAW_EXPANDED` unless actively transitioning from `CLASSIFICATION_DRAW` mode.
+    - Computed abstract application sections (e.g. `classification`) dynamically parsing the active route hierarchy (`route.startsWith()`), making the drawer UI entirely generic and agnostic of internal URL subsets.
+    - Affected files: `src/navigation/context.ts`, `src/navigation/useAppNavigation.ts`, `src/navigation/defaults.ts`, `src/screens/navigation/NavigationMenu.tsx`, `src/App.tsx`, `src/screens/classification/ClassificationLayout.tsx`.
+- **Supervision Justification:** The implementation went through several iterations based on strict supervision and architectural guidance by the user:
+    1. **Domain Isolation**: Initially, navigation routing, gestures, and UI components were polluting `ClassificationLayout`. The user requested to extract this, decoupling the global application navigation out of specific screen layouts.
+    2. **Swipe to Close**: The user identified that swiping to open was implemented, but requested adding swipe right-to-left interaction to also close the drawer gracefully.
+    3. **Precondition Violations (Active Page)**: The user noted that clicking an already active page in the drawer would redundantly trigger navigation and close the drawer. Following the `NavigationProps` contract, this was corrected so nothing happens when clicking the currently active abstract page.
+    4. **Inline UI Logic Extraction**: The user pointed out that routing logic and URL subset parsing were erroneously injected directly within `App.tsx` and `NavigationMenu.tsx` component files, causing tight coupling.
+    5. **ViewModel Extraction**: Following the previous discovery, the user directed to move all navigation callbacks, bounded state logic, and boolean presentation derivation (like `shouldShowMenuButton`) entirely into a ViewModel. The AI successfully consolidated this into the main `useAppNavigation` hook.
+    6. **Dynamic Routing and Precise Route Bounds**: The AI had mistakenly used `Object.values(Routes)` assuming that *all* defined routes in the application belonged to the 'classification' abstract group. The user corrected this architectural flaw. It was refactored to parse URL hierarchies robustly (`route.startsWith('/classification')`), establishing an scalable layout for the future. Finally, `currentAbstractPage` is passed purely as a data prop, fully decoupling the UI menu from app routing mechanics.
