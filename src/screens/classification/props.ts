@@ -16,6 +16,7 @@ export interface ClassificationLayoutProps {
 /**
  * @invariant The inference list is always displayed below the image
  * @invariant Content is always centered and stacked in a column layout
+ * @invariant While the image is being displayed, it will always fit the container of the image resizing is necesary.
  */
 export interface ClassificationPhotoModeLayoutProps {
     /**
