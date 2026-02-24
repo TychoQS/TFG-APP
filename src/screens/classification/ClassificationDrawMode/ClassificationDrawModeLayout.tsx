@@ -9,17 +9,19 @@ import type { Kanji } from "../../../model/types";
 import { DeleteOutlined, FullscreenOutlined, FullscreenExitOutlined } from "@ant-design/icons";
 import { useNavigation } from '../../../navigation/context';
 import { Routes } from '../../../navigation/routes';
+import { theme } from "antd";
 
 
 const ClassificationDrawModeLayout = (props: ClassificationDrawModeLayoutProps) => {
     const [selectedKanji, setSelectedKanji] = useState<Kanji | null>(null);
     const { route } = useNavigation();
     const isExtended = route === Routes.CLASSIFICATION_DRAW_EXPANDED;
-
+    const { token } = theme.useToken();
+    const canvasBg = token.colorBgContainer === '#ffffff' ? 'white' : 'black';
     return (
         <div className={`container ${isExtended ? 'extended' : ''}`}>
             <div className={`canvas-layout-container ${isExtended ? 'extended' : ''}`}>
-                <CanvasInput backgroundColor="black" />
+                <CanvasInput backgroundColor={canvasBg} />
             </div>
             <Button icon={<DeleteOutlined />} onClick={() => window.dispatchEvent(new CustomEvent('canvas:clear'))}>
                 Clear

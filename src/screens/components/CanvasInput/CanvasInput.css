@@ -21,7 +21,6 @@
 
 .canvas-draw-area.white {
     background: var(--color-white);
-    box-shadow: 0 10px 40px var(--shadow-base);
 }
 
 .canvas-draw-area.black {
