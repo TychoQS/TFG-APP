@@ -13,3 +13,9 @@ trigger: always_on
 
 ## Contract References
 - When implementing a callback in a Props interface, always check if there is a corresponding interface in `src/features/` that defines its behavior and respect its @precondition, @postcondition and @invariant.
+
+## UI
+- When choosing colors for UI aspects don't harcode any value and use the variables of the themes. Besides mantain the feature of Light/Dark themes working as well with the same consistency of colors
+
+## Architecture
+- When implementing take into consideration that the application is using MVVM architecture with React Hooks as ViewModels.
