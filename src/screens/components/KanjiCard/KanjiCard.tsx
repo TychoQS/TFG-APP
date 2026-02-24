@@ -20,10 +20,11 @@ const KanjiCard: React.FC<KanjiCardProps> = ({ kanji, onClose }) => {
             placement="bottom"
             onClose={onClose}
             open={true}
-            height="auto"
+            size="auto"
             closable={false}
             className="kanji-card-drawer"
-            destroyOnClose={true}
+            destroyOnHidden={true}
+            styles={{ wrapper: { background: 'transparent', boxShadow: 'none' }, }}
         >
             <div className="kanji-card-wrapper">
                 <button className="kanji-card-close-btn" onClick={onClose} aria-label="Close">
