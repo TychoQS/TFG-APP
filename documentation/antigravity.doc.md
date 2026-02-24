@@ -92,3 +92,21 @@
     - Achieved a consistent grayscale aesthetic layout where the dark side is composed of pure `#000` pitch blacks with cold grays and the light layout handles clean `#fff` forms keeping harmony avoiding two separate application feels.
     - Affected files: `src/index.css`, `src/App.css`, `src/App.tsx`, `src/screens/components/CanvasInput/CanvasInput.css`, `src/screens/components/InferenceList/InferenceList.css`, `src/screens/components/KanjiCard/KanjiCard.css`, `src/screens/components/LoadingScreen/LoadingScreen.css`, `src/screens/classification/ClassificationPhotoMode/ClassificationPhotoModeLayout.css`.
 - **Supervision Justification:** The implementation rigorously enforces all required domain specifications. Semantic CSS variables ensure components are visually agnostic and bounded purely by injected token names, abiding exactly by the "no hardcoded colors anywhere" ruling. All colors default system appearance APIs correctly via `window.matchMedia` propagating visually safely under the `ThemeConfigProps` bounds.
+
+## 2026-02-24
+### **Task ID:**    
+- **Human Specification (Input):** Implement the upload picture functionality according to the contracts defined. Address layout issues where large photos collapse the screen. Fix the non-functional "Take Photo" button. Remove unnecessary desktop hover effects for mobile optimization. Ensure the ViewModel strictly respects all contract preconditions, including route validation and device permission checks.
+- **Technical Development:** 
+    - Created `useClassificationViewModel` hook in `src/screens/classification/useClassificationViewModel.ts` implementing `UploadPhotoInterface`, `TakePhotoInterface`, and `DeleteImageInterface`.
+    - Integrated `@capacitor/camera` for native `takePhoto` functionality, implementing a `fetch/blob` pipeline to convert native URIs into standard `File` objects.
+    - Added mandatory Capacitor permission checks for `camera` and `photos` access within the ViewModel to satisfy hardware access preconditions.
+    - Hardened the ViewModel with route-based guards (checking `Routes.CLASSIFICATION_OCR`) and state validation (ensuring image exists before deletion) to prevent contract violations.
+    - Optimized `ClassificationPhotoModeLayout.css` for mobile by removing hover interaction tokens and applying `object-fit: contain` to satisfy the image resizing invariant.
+    - Integrated the refined ViewModel into `ClassificationLayout.tsx`, maintaining state isolation between classification modes.
+    - Affected files: `src/screens/classification/useClassificationViewModel.ts`, `src/screens/classification/ClassificationLayout.tsx`, `src/screens/classification/ClassificationPhotoMode/ClassificationPhotoModeLayout.tsx`, `src/screens/classification/ClassificationPhotoMode/ClassificationPhotoModeLayout.css`, `src/screens/classification/props.ts`.
+- **Supervision Justification:** The implementation strictly adheres to the Design by Contract (DbC) interfaces and MVVM architecture. The result is valid because it incorporates the following manual adjustments requested by the user during the refinement process:
+        1. **Image Scaling Fix:** Optimized the image preview to occupy more container width (95%) and fixed layout collapse issues for large images using `object-fit: contain` as per the newly added contract invariant.
+        2. **Native Camera Pipeline:** Corrected the `takePhoto` logic by implementing a `fetch` and `blob` conversion to ensure Capacitor's native URIs are correctly transformed into `File` objects that the application can process.
+        3. **Mobile UX Optimization:** Removed desktop-specific hover effects and transitions from the image placeholder to align with the application's mobile-first nature.
+        4. **Contract Hardening:** Manually added validation logic in the ViewModel to enforce route-based preconditions (`Routes.CLASSIFICATION_OCR`) and hardware access checks (`Camera.checkPermissions`).
+        5. **Permission Management:** Integrated explicit permission requests for camera and photo storage access to satisfy high-level hardware access invariants defined in the domain contracts.

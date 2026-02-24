@@ -7,6 +7,7 @@ import ClassificationDrawModeLayout from "./ClassificationDrawMode/Classificatio
 import "./ClassificationLayout.css";
 import { useNavigation } from '../../navigation/context';
 import { Routes } from '../../navigation/routes';
+import { useClassificationViewModel } from "./useClassificationViewModel";
 
 
 
@@ -14,6 +15,18 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [isExtended, setIsExtended] = useState(false);
     const { navigateTo } = useNavigation();
+    const {
+        currentImage,
+        inferenceList,
+        uploadPhoto,
+        takePhoto,
+        delete: deleteImage
+    } = useClassificationViewModel(currentMode);
+
+    const handleToggle = () => {
+        deleteImage(); // Clear state when toggling as per ToggleClassificationModeInterface postcondition
+        onToggle();
+    };
 
     return (
         <div className="layout-container">
@@ -23,13 +36,13 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
                     <Button.Group>
                         <Button
                             type={currentMode === '/classification/ocr' ? 'primary' : 'default'}
-                            onClick={onToggle}
+                            onClick={handleToggle}
                         >
                             Photo
                         </Button>
                         <Button
                             type={currentMode === '/classification/draw' ? 'primary' : 'default'}
-                            onClick={onToggle}
+                            onClick={handleToggle}
                         >
                             Draw
                         </Button>
@@ -43,10 +56,10 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
             <div className="layout-content">
                 {currentMode === '/classification/ocr' ? (
                     <ClassificationPhotoModeLayout
-                        onTakePhoto={() => console.log('Take photo')}
-                        onUploadPhoto={() => console.log('Upload photo')}
-                        currentImage={null}
-                        inferenceList={[]}
+                        onTakePhoto={takePhoto}
+                        onUploadPhoto={uploadPhoto}
+                        currentImage={currentImage}
+                        inferenceList={inferenceList}
                     />
                 ) : (
                     <ClassificationDrawModeLayout

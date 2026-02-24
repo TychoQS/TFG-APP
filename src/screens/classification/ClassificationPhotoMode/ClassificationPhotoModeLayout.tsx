@@ -7,12 +7,6 @@ import { useState } from "react";
 import { KanjiCard } from "../../components/KanjiCard";
 import type { Kanji } from "../../../model/types";
 
-const mockList: Kanji[] = [
-    { character: "日", kunyomi: ["ひ"], onyomi: ["ニチ"], confidence: 0.95 },
-    { character: "月", kunyomi: ["つき"], onyomi: ["ゲツ"], confidence: 0.80 },
-];
-
-
 const ClassificationPhotoModeLayout = (props: ClassificationPhotoModeLayoutProps) => {
     const [selectedKanji, setSelectedKanji] = useState<Kanji | null>(null);
     return (
@@ -29,7 +23,7 @@ const ClassificationPhotoModeLayout = (props: ClassificationPhotoModeLayoutProps
             </div>
             <div className="predict-list">
                 <InferenceList
-                    inferenceList={mockList}
+                    inferenceList={props.inferenceList}
                     onKanjiPress={(kanji) => setSelectedKanji(kanji)}
                 />
 
