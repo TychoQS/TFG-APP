@@ -5,7 +5,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
 }
 
 .canvas-draw-area {
@@ -26,7 +25,7 @@
 .canvas-draw-area.black {
     background: var(--color-black);
     box-shadow: 0 10px 40px var(--shadow-strong);
-    border: 1px solid var(--color-white);
+    outline: 1px solid var(--color-white);
 }
 
 .canvas-wrapper::after {

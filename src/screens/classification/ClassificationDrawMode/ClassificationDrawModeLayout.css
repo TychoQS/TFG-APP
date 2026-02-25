@@ -4,8 +4,8 @@
     align-items: center;
     padding: 16px 0;
     gap: 2rem;
-    height: 100vh;
-    overflow: hidden;
+    width: 100%;
+
 }
 
 .canvas-layout-container {
@@ -38,7 +38,7 @@
 }
 
 .container.extended {
-    padding: 0;
+    padding: 0 1px;
 }
 
 .canvas-layout-container.extended {
@@ -47,4 +47,5 @@
     aspect-ratio: unset;
     max-width: unset;
     max-height: unset;
+    padding: 1px;
 }
