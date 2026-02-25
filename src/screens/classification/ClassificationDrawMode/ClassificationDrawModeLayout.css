@@ -21,6 +21,7 @@
 .container .ant-btn {
     width: 60%;
     height: 3rem;
+    min-width: fit-content;
     font-size: 1.1rem;
 }
 

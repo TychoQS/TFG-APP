@@ -28,7 +28,7 @@ const ClassificationDrawModeLayout = (props: ClassificationDrawModeLayoutProps) 
             </Button>
             {isExtended ? (
                 <Button onClick={props.onContractCanvas} icon={<FullscreenExitOutlined />}>
-                    Exit extended mode
+                    Exit
                 </Button>
             ) : (
                 <Button onClick={props.onExtendCanvas} icon={<FullscreenOutlined />}>
