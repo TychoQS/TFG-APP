@@ -35,9 +35,9 @@ export interface CanvasInputInterface {
 
     /**
      * @precondition The user must be in the classification page in the draw mode
-     * @invariant The state of the stroke history list must be null or a list of strokes
+     * @invariant The state of the stroke history list must be an empty list or a list of strokes
      * @invariant All points must be within the canvas bounds
-     * @invariant The state of the suggestion list must be null or a list of kanji (maximum 5)
+     * @invariant The state of the suggestion list must be an empty list or a list of kanji (maximum 5)
      * @postcondition The stroke information is saved in the stroke history list 
      */
     saveStroke(points: Point[]): void;

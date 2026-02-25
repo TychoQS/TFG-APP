@@ -1,7 +1,7 @@
 import type { Kanji } from "../../model/types";
 
 
-export interface DisplayInferenceInterface {
+export interface DisplayInferencesInterface {
 
     inferenceList: Array<Kanji>;
 
@@ -12,6 +12,7 @@ export interface DisplayInferenceInterface {
      * @invariant The value of confidence of each prediction in the prediction list must be over 0%
      * @invariant The prediction list must be sorted by confidence in descending order
      * @invariant The prediction list have at maximum 5 elements
+     * @invariant The prediction list only can be an empty list or a list of kanjis
      * @invariant In classification ocr mode, the list is only updated once after the first inference
      * @invariant In classification draw mode, the list is updated after every inference
      */
