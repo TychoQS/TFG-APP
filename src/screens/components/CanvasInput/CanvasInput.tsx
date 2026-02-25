@@ -93,7 +93,12 @@ const CanvasInput: React.FC<CanvasInputProps> = ({ backgroundColor }) => {
         // Dispatch custom event to notify features (DrawStrokeInterface)
         // This maintains separation of concerns while following DbC postconditions
         const strokePoints = [...pointsRef.current];
-        window.dispatchEvent(new CustomEvent('canvas:stroke-end', { detail: { points: strokePoints } }));
+        window.dispatchEvent(new CustomEvent('canvas:stroke-end', {
+            detail: {
+                points: strokePoints,
+                canvas: canvasRef.current
+            }
+        }));
     };
 
     return (

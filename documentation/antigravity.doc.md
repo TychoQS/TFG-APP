@@ -94,7 +94,7 @@
 - **Supervision Justification:** The implementation rigorously enforces all required domain specifications. Semantic CSS variables ensure components are visually agnostic and bounded purely by injected token names, abiding exactly by the "no hardcoded colors anywhere" ruling. All colors default system appearance APIs correctly via `window.matchMedia` propagating visually safely under the `ThemeConfigProps` bounds.
 
 ## 2026-02-24
-### **Task ID:**    
+### **Task ID: CLASSIF-01**    
 - **Human Specification (Input):** Implement the upload picture functionality according to the contracts defined. Address layout issues where large photos collapse the screen. Fix the non-functional "Take Photo" button. Remove unnecessary desktop hover effects for mobile optimization. Ensure the ViewModel strictly respects all contract preconditions, including route validation and device permission checks.
 - **Technical Development:** 
     - Created `useClassificationViewModel` hook in `src/screens/classification/useClassificationViewModel.ts` implementing `UploadPhotoInterface`, `TakePhotoInterface`, and `DeleteImageInterface`.
@@ -110,3 +110,35 @@
         3. **Mobile UX Optimization:** Removed desktop-specific hover effects and transitions from the image placeholder to align with the application's mobile-first nature.
         4. **Contract Hardening:** Manually added validation logic in the ViewModel to enforce route-based preconditions (`Routes.CLASSIFICATION_OCR`) and hardware access checks (`Camera.checkPermissions`).
         5. **Permission Management:** Integrated explicit permission requests for camera and photo storage access to satisfy high-level hardware access invariants defined in the domain contracts.
+
+## 2026-02-25
+### **Task ID: MODEL-01**
+- **Human Specification (Input):** Refactor the inference pipeline to use `image-js` for all image processing (resizing, inversion, binarization). Configure the build system (Vite) and ONNX runtime to correctly load WASM dependencies and the model from the public root. Ensure the output is a Top 5 list of Kanji characters with normalized confidence scores.
+- **Technical Development:** 
+    - Installed and integrated `image-js` library, using browser-compatible utilities like `readCanvas`, `readImg`, and `decode` to eliminate all `@ts-ignore` comments.
+    - Implemented a specialized dual-pipe preprocessing system in `InferenceRunner.ts`:
+        - `preprocessCanvas`: Captures raw drawing data, resizes via "Nearest Neighbor", and applies conditional inversion based on global mean intensity.
+        - `preprocessFile`: Decodes buffers, converts to grayscale, resizes, and applies Otsu binarization for robust OCR performance.
+    - Updated `vite.config.ts` with `vite-plugin-static-copy` to distribute `onnxruntime-web` WASM files and the model to the output root.
+    - Configured `ort.env.wasm.wasmPaths = '/';` in `loader/default.ts` to resolve runtime dependency issues.
+    - Implemented a Softmax normalization pass in the post-processing stage to transform model logits into standard probabilities ($[0, 1]$).
+    - Integrated the `LoadingScreen` component in `ClassificationLayout.tsx` and refactored `ModelLoader.ts` with an idempotent loading promise to provide safe initialization feedback.
+    - Refined the inference pipeline to strictly separate raw data processing from UI state management:
+        - `InferenceRunner`: Implements `InferenceRunnerInterface` to perform model prediction and return normalized Top 5 results.
+        - `useClassificationViewModel`: Implements `DisplayInferencesInterface` to manage the lifecycle of the inference list, enforcing cross-feature invariants (sorting, filtering confidence > 0, and mode-specific update logic).
+    - Specialized the `DisplayInferencesInterface` implementation:
+        - **OCR Mode:** Strictly enforced the "update once" invariant, ensuring a stable result display for each photo session.
+        - **Draw Mode:** Enforced the "every inference" update invariant to provide real-time feedback after every stroke.
+    - Affected files: `src/features/inference/default.ts`, `src/features/inference/types.ts`, `src/features/kanji/types.ts`, `src/features/inference/loader/default.ts`, `src/screens/classification/useClassificationViewModel.ts`, `src/screens/classification/ClassificationLayout.tsx`, `vite.config.ts`, `package.json`.
+- **Supervision Justification:** The result is valid as it incorporates the following manual adjustments requested by the user to fix regression issues and optimize model accuracy:
+    1. **Canvas Grayscale Skip:** Per user request, grayscale conversion was removed from the canvas path to preserve drawing fidelity and performance, as the canvas is effectively binary by nature.
+    2. **Otsu Binarization for Files:** Exclusively enabled Otsu for external files (photos/uploads) to handle varying lighting conditions and noise, while keeping the drawing path lightweight.
+    3. **Threshold Normalization (0.5 vs 127.5):** Adjusted the thresholding value from $127.5$ to $0.5$. **Why:** `image-js` expects a $[0, 1]$ ratio for the `threshold` function. $0.5$ represents 50% of the `maxValue` ($255$), satisfying the requirement while avoiding library range errors.
+    4. **Softmax Implementation:** Manually added a Softmax algorithm in the postprocess method. **Why:** The raw model output (logits) contained large values that broke the UI's confidence sliders. Softmax ensures values sum to $1$ and stay within $[0, 1]$ range.
+    5. **Nearest Neighbor enforcement:** Explicitly set `interpolationType: 'nearest'` in all resize calls to maintain high-contrast edges for the classification model.
+    6. **WASM & Build Fix:** Configured static asset copying and environmental paths (`wasmPaths`) to solve the "Module not found" and "WASM loading failed" errors in the browser environment.
+    7. **Clean-up of Obsolete Methods:** Removed `calculateOtsuThreshold` and manual pixel-walking loops, replacing them with optimized library methods like `mask.getBitByIndex()`.
+    8. **Infinite Scroll triplication:** Verified that the logic respects the Top 5 contract while explaining that the 15 items seen in the UI are a deliberate triplication for the perpetual scroll experience.
+    9. **Initialization Feedback (LoadingScreen):** Added a placeholder screen during the asynchronous model loading process to prevent user confusion during the 1-2s engine cold-start while respecting the existing `isModelReady` contract.
+    10. **Contractual Separation (MVVM):** Refactored the architecture to use `DisplayInferencesInterface` for View-Model presentation logic, ensuring `InferenceRunner` remains a stateless internal service.
+    11. **Invariant Enforcement (List Lifecycle):** Explicitly implemented the sorting, $>0\%$ filtering, and mode-specific update frequency (OCR: once per session vs Draw: continuous) as defined in the high-level domain contracts.

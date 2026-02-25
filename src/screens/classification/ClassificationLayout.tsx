@@ -4,6 +4,7 @@ import { Button, Drawer, Menu } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import ClassificationPhotoModeLayout from "./ClassificationPhotoMode/ClassificationPhotoModeLayout";
 import ClassificationDrawModeLayout from "./ClassificationDrawMode/ClassificationDrawModeLayout";
+import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 import "./ClassificationLayout.css";
 import { useNavigation } from '../../navigation/context';
 import { Routes } from '../../navigation/routes';
@@ -18,6 +19,7 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
     const {
         currentImage,
         inferenceList,
+        isLoading,
         uploadPhoto,
         takePhoto,
         delete: deleteImage
@@ -30,6 +32,7 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
 
     return (
         <div className="layout-container">
+            {isLoading && <LoadingScreen loadingText="Initializing Model..." />}
             {!isExtended && (
                 <div className="layout-header">
                     <Button icon={<MenuOutlined />} onClick={() => setDrawerOpen(true)} />
@@ -53,7 +56,7 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
                 <Menu items={[]} />
             </Drawer>
 
-            <div className="layout-content">
+            <div className={`layout-content ${isLoading ? 'blur-content' : ''}`}>
                 {currentMode === '/classification/ocr' ? (
                     <ClassificationPhotoModeLayout
                         onTakePhoto={takePhoto}
@@ -71,7 +74,7 @@ const ClassificationLayout = ({ currentMode, onToggle }: ClassificationLayoutPro
                             setIsExtended(false);
                             navigateTo(Routes.CLASSIFICATION_DRAW);
                         }}
-                        inferenceList={[]}
+                        inferenceList={inferenceList}
                     />
                 )}
             </div>

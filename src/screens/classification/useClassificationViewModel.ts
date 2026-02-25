@@ -1,31 +1,111 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import type { Kanji } from '../../model/types';
 import type { UploadPhotoInterface, DeleteImageInterface, TakePhotoInterface } from '../../features/photo/types';
 import { Routes } from '../../navigation/routes';
 import type { Route } from '../../navigation/types';
+import { modelLoader } from '../../features/inference/loader/default';
+import { inferenceRunner } from '../../features/inference/default';
+import type { DisplayInferencesInterface } from '../../features/kanji/types';
 
-interface ClassificationViewModel extends UploadPhotoInterface, TakePhotoInterface, DeleteImageInterface {
+interface ClassificationViewModel extends
+    UploadPhotoInterface,
+    TakePhotoInterface,
+    DeleteImageInterface,
+    DisplayInferencesInterface {
     currentImage: File | null;
-    inferenceList: Kanji[];
+    isLoading: boolean;
+    triggerCanvasInference: (canvas: HTMLCanvasElement) => Promise<void>;
 }
 
 
 export const useClassificationViewModel = (currentRoute: Route): ClassificationViewModel => {
     const [currentImage, setCurrentImage] = useState<File | null>(null);
     const [inferenceList, setInferenceList] = useState<Kanji[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(!modelLoader.isModelReady);
+    const pendingResultsRef = useRef<Kanji[]>([]);
+
+    useEffect(() => {
+        if (!modelLoader.isModelReady) {
+            setIsLoading(true);
+            modelLoader.loadModel()
+                .catch(console.error)
+                .finally(() => setIsLoading(false));
+        } else {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        const handleStrokeEnd = (e: any) => {
+            if (e.detail?.canvas) {
+                triggerCanvasInference(e.detail.canvas);
+            }
+        };
+
+        window.addEventListener('canvas:stroke-end' as any, handleStrokeEnd);
+
+        const handleClear = () => {
+            pendingResultsRef.current = [];
+            setInferenceList([]);
+        };
+        window.addEventListener('canvas:clear', handleClear);
+
+        return () => {
+            window.removeEventListener('canvas:stroke-end' as any, handleStrokeEnd);
+            window.removeEventListener('canvas:clear', handleClear);
+        };
+    }, [currentRoute]);
+
+    // Automatically trigger inference when currentImage changes in OCR mode
+    useEffect(() => {
+        if (currentImage && currentRoute === Routes.CLASSIFICATION_OCR) {
+            triggerInference(currentImage);
+        }
+    }, [currentImage, currentRoute]);
+
+    const displayInference = () => {
+        if (pendingResultsRef.current.length === 0) return;
+
+        // Apply Invariants: Filter > 0%, Sort descending, Max 5
+        const validResults = pendingResultsRef.current
+            .filter(k => k.confidence > 0)
+            .sort((a, b) => b.confidence - a.confidence)
+            .slice(0, 5);
+
+        // Mode Invariants
+        if (currentRoute === Routes.CLASSIFICATION_OCR) {
+            // Updated once after first inference (don't update if already populated for current source session)
+            if (inferenceList.length === 0) {
+                setInferenceList(validResults);
+            }
+        } else {
+            // Draw mode: updated after every inference
+            setInferenceList(validResults);
+        }
+    };
 
     /**
-     * Mocks the inference process.
-     * @postcondition Inference results are loaded into the suggestion list.
+     * Triggers the inference process using the actual model.
+     * @postcondition Inference results are loaded into the suggestion list via displayInference.
      */
-    const triggerInference = (_file: File) => {
-        // Mock inference results
-        setInferenceList([
-            { character: "日", kunyomi: ["ひ"], onyomi: ["ニチ"], confidence: 0.95 },
-            { character: "月", kunyomi: ["つき"], onyomi: ["ゲツ"], confidence: 0.80 },
-            { character: "火", kunyomi: ["ひ"], onyomi: ["カ"], confidence: 0.75 },
-        ]);
+    const triggerInference = async (source: File | HTMLCanvasElement) => {
+        try {
+            const results = await inferenceRunner.predict(source);
+            pendingResultsRef.current = results;
+            displayInference();
+        } catch (error) {
+            console.error("Inference failed:", error);
+            pendingResultsRef.current = [];
+            setInferenceList([]);
+        }
+    };
+
+    const triggerCanvasInference = async (canvas: HTMLCanvasElement) => {
+        if (currentRoute !== Routes.CLASSIFICATION_DRAW && currentRoute !== Routes.CLASSIFICATION_DRAW_EXPANDED) {
+            return;
+        }
+        await triggerInference(canvas);
     };
 
     const uploadPhoto = async () => {
@@ -51,8 +131,8 @@ export const useClassificationViewModel = (currentRoute: Route): ClassificationV
                 const target = e.target as HTMLInputElement;
                 const file = target.files?.[0];
                 if (file) {
+                    setInferenceList([]); // Reset for new photo
                     setCurrentImage(file);
-                    triggerInference(file);
                 }
             };
             input.click();
@@ -89,8 +169,8 @@ export const useClassificationViewModel = (currentRoute: Route): ClassificationV
                 const response = await fetch(photo.webPath);
                 const blob = await response.blob();
                 const file = new File([blob], `captured_photo_${Date.now()}.jpg`, { type: blob.type });
+                setInferenceList([]); // Reset for new photo
                 setCurrentImage(file);
-                triggerInference(file);
             }
         } catch (error) {
             console.error("Camera interaction failed or cancelled:", error);
@@ -100,24 +180,23 @@ export const useClassificationViewModel = (currentRoute: Route): ClassificationV
 
 
     const deleteImage = () => {
-        if (currentRoute !== Routes.CLASSIFICATION_OCR) {
-            console.error("Precondition failed: delete can only be triggered in OCR mode.");
-            return;
-        }
-        if (!currentImage) {
-            console.warn("Precondition warning: Attempted to delete image when none was loaded.");
+        if (currentRoute !== Routes.CLASSIFICATION_OCR && currentRoute !== Routes.CLASSIFICATION_DRAW && currentRoute !== Routes.CLASSIFICATION_DRAW_EXPANDED) {
             return;
         }
 
         setCurrentImage(null);
+        pendingResultsRef.current = [];
         setInferenceList([]);
     };
 
     return {
         currentImage,
         inferenceList,
+        isLoading,
         uploadPhoto,
         takePhoto,
+        displayInference,
+        triggerCanvasInference,
         delete: deleteImage
     };
 };

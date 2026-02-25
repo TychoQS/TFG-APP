@@ -15,4 +15,10 @@
 .layout-content {
     flex: 1;
     overflow: hidden;
+    transition: filter 0.3s ease;
+}
+
+.blur-content {
+    filter: blur(4px);
+    pointer-events: none;
 }

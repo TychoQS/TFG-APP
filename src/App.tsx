@@ -8,12 +8,18 @@ import { Button } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 import { useAppNavigation } from './navigation/useAppNavigation';
 
+import { modelLoader } from './features/inference/loader/default';
+
 const { Content } = Layout;
 
 const App: React.FC = () => {
   const [isDark, setIsDark] = useState(
     window.matchMedia('(prefers-color-scheme: dark)').matches
   );
+
+  useEffect(() => {
+    modelLoader.loadModel().catch(console.error);
+  }, []);
 
   const {
     route,
